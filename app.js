@@ -1,7 +1,9 @@
 const form = document.querySelector('#add-list');
 const input = document.querySelector('#user-input');
 const toDoList = document.querySelector('#todo-list');
+const clearButton = document.getElementById('clear-btn');
 
+// retreiving from local storage and displayiing all lists:
 const storedToDo = JSON.parse(localStorage.getItem('todos')) || [];
 for (let toDo of storedToDo) {
     const savedToDo = document.createElement('li');
@@ -16,6 +18,7 @@ for (let toDo of storedToDo) {
     toDoList.appendChild(savedToDo);
 }
 
+// adding and removing line-through style over text in the list and updating local storage that already exists.
 toDoList.addEventListener('click', function(e) {
     if (!e.target.isCompleted) {
         e.target.style.textDecoration = "line-through";
@@ -33,6 +36,7 @@ toDoList.addEventListener('click', function(e) {
     }
 });
 
+// adding lists and local storage in the first time.
 
 form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -41,9 +45,18 @@ form.addEventListener('submit', function(e) {
     newToDo.isCompleted = false; // isCompleted class
     form.reset();
 
-    if (newToDo.innerText.length >= 1) {
+    const isStoreEmpty = storedToDo.length < 1; // chek if store is empty
+
+    if ((newToDo.innerText.length >= 1) && (isStoreEmpty ||
+            (localStorage.getItem("todos").indexOf(newToDo.innerText) === -1))) { // check if list already exists
+
         storedToDo.push({ task: newToDo.innerText, isCompleted: newToDo.isCompleted });
         localStorage.setItem("todos", JSON.stringify(storedToDo));
         toDoList.appendChild(newToDo);
     }
+});
+
+clearButton.addEventListener('click', () => {
+    localStorage.clear();
+    location.reload();
 });
